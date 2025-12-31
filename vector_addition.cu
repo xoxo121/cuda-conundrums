@@ -1,5 +1,5 @@
 // Vector Addition
-// Easy
+
 // Implement a program that performs element-wise addition of two vectors containing 32-bit floating point numbers on a GPU. The program should take two input vectors of equal length and produce a single output vector containing their sum.
 
 // Implementation Requirements
