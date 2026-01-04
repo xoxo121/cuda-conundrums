@@ -18,24 +18,19 @@
 
 #include <cuda_runtime.h>
 
-__global__ void convolution_1d_kernel(const float* __restrict__ input,
-                                      const float* __restrict__ kernel,
-                                      float* __restrict__ output,
-                                      int input_size,
-                                      int kernel_size) {
-    const int idx = blockDim.x * blockIdx.x + threadIdx.x;
-    const int output_size = input_size - kernel_size + 1;
+__global__ void convolution_1d_kernel(const float* input, const float* kernel, float* output,
+                                      int input_size, int kernel_size) {
+    
+    int i =  blockDim.x * blockIdx.x + threadIdx.x;
+    int output_size = input_size - kernel_size + 1;
 
-    if (idx >= output_size) {
-        return;
+    if (i < output_size){
+        float sum = 0;
+        for (int j = 0; j < kernel_size; ++j){
+            sum += input[i+j] * kernel[j];
+        }
+        output[i] = sum;
     }
-
-    const float* in = input + idx;
-    float sum = 0.0f;
-    for (int j = 0; j < kernel_size; ++j) {
-        sum = fmaf(in[j], kernel[j], sum);
-    }
-    output[idx] = sum;
 }
 
 // input, kernel, output are device pointers (i.e. pointers to memory on the GPU)
