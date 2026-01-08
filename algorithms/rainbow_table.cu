@@ -15,20 +15,13 @@ __device__ unsigned int fnv1a_hash(int input) {
 }
 
 __global__ void fnv1a_hash_kernel(const int* input, unsigned int* output, int N, int R) {
-    // 1. Calculate the unique index for this thread
     int i = blockIdx.x * blockDim.x + threadIdx.x;
 
     if (i < N) {
         unsigned int current_val = (unsigned int)input[i];
-
-        // 3. Apply the hash R times iteratively
         for (int r = 0; r < R; r++) {
-            // Note: fnv1a_hash takes an int, so we cast current_val 
-            // to treat its bits as an integer input.
             current_val = fnv1a_hash((int)current_val);
         }
-
-        // 4. Store the final result
         output[i] = current_val;
     }
 }
@@ -36,12 +29,9 @@ __global__ void fnv1a_hash_kernel(const int* input, unsigned int* output, int N,
 // input, output are device pointers (i.e. pointers to memory on the GPU)
 extern "C" void solve(const int* input, unsigned int* output, int N, int R) {
     int threadsPerBlock = 256;
-    // Calculate enough blocks to cover all N elements
     int blocksPerGrid = (N + threadsPerBlock - 1) / threadsPerBlock;
 
-    // Launch the kernel
     fnv1a_hash_kernel<<<blocksPerGrid, threadsPerBlock>>>(input, output, N, R);
     
-    // Synchronize to ensure the GPU finishes before returning to the caller
     cudaDeviceSynchronize();
 }
