@@ -1,3 +1,12 @@
+// Rainbow Table
+
+// Implement a program that performs R rounds of parallel hashing on an array of 32-bit integers using the provided hash function. The hash should be applied R times iteratively (the output of one round becomes the input to the next).
+
+// Constraints
+// 1 ≤ N ≤ 10,000,000
+// 1 ≤ R ≤ 100
+// 0 ≤ input[i] ≤ 2147483647
+
 #include <cuda_runtime.h>
 
 __device__ unsigned int fnv1a_hash(int input) {
@@ -10,7 +19,6 @@ __device__ unsigned int fnv1a_hash(int input) {
         unsigned char byte = (input >> (byte_pos * 8)) & 0xFF;
         hash = (hash ^ byte) * FNV_PRIME;
     }
-
     return hash;
 }
 
